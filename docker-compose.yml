@@ -11,20 +11,30 @@ services:
       - db
     ports:
       - "3000:3000"
+      - "5555:5555"
     volumes:
       - type: bind
         source: .
         target: /api
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@ttv-postgres/postgres?schema=public
+      # postgresql URL: postgresql://<user>:<password>@<host>:<port>/<database>?schema=<schema>
+      - DATABASE_URL=postgresql://user:password@db/db?schema=public
+    command:
+      - /bin/sh
+      - -c
+      - |
+        yarn prisma:generate &
+        yarn prisma:migrate &
+        yarn prisma:studio &
+        yarn start
 
   db:
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
