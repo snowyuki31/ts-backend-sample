@@ -5,6 +5,10 @@ COPY package.json yarn.lock ./
 RUN yarn install --prod --frozen-lockfile
 COPY . .
 
+ARG _DATABASE_URL
+ENV DATABASE_URL=${_DATABASE_URL}
+RUN echo ${DATABASE_URL}
+
 RUN yarn run prisma generate
 RUN yarn run prisma migrate deploy
 
